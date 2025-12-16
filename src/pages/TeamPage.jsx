@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getTeamSquad } from '../api/footballApi';
+import PlayerCard from '../components/PlayerCard';
 
 const TeamPage = () => {
   const { teamId } = useParams();
@@ -62,16 +63,7 @@ const TeamPage = () => {
         </thead>
         <tbody>
           {goalkeepers?.map((player) => (
-            <tr key={player.id}>
-              <td>
-                <Link to={`/player/${player.id}`} state={{ teamId }}>{player.name}</Link>
-              </td>
-              <td>{player.age}</td>
-              <td>{player.number}</td>
-              <td>
-                <img src={player.photo} alt={player.name} width="50" />
-              </td>
-            </tr>
+            <PlayerCard key={player.id} player={player} teamId={teamId} />
           ))}
         </tbody>
       </table>
@@ -89,17 +81,7 @@ const TeamPage = () => {
         </thead>
         <tbody>
           {outfieldPlayers?.map((player) => (
-            <tr key={player.id}>
-              <td>
-                <Link to={`/player/${player.id}`} state={{ teamId }}>{player.name}</Link>
-              </td>
-              <td>{player.position}</td>
-              <td>{player.age}</td>
-              <td>{player.number}</td>
-              <td>
-                <img src={player.photo} alt={player.name} width="50" />
-              </td>
-            </tr>
+            <PlayerCard key={player.id} player={player} teamId={teamId} />
           ))}
         </tbody>
       </table>
