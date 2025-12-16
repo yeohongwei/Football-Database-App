@@ -58,7 +58,12 @@ const LeaguePage = () => {
             <tr key={team.team.id}>
               <td>{team.rank}</td>
               <td>
-                <Link to={`/team/${team.team.id}`}>
+                <Link 
+                  to={{
+                    pathname: `/team/${team.team.id}`,
+                  }}
+                  state={{ leagueId, season }}
+                >
                   <img src={team.team.logo} alt={team.team.name} width="20" />
                   {team.team.name}
                 </Link>

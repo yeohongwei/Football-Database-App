@@ -1,16 +1,26 @@
 import React from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getTeamSquad } from '../api/footballApi';
 
 const TeamPage = () => {
   const { teamId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { leagueId, season } = location.state || {};
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['teamSquad', teamId],
     queryFn: () => getTeamSquad(teamId),
   });
+
+  const handleBack = () => {
+    if (leagueId && season) {
+      navigate(`/league/${leagueId}/${season}`);
+    } else {
+      navigate('/');
+    }
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -32,7 +42,7 @@ const TeamPage = () => {
 
   return (
     <div>
-      <button onClick={() => navigate(-1)}>Back</button>
+      <button onClick={handleBack}>Back</button>
       {team && (
         <div>
           <h1>{team.name}</h1>
@@ -54,7 +64,7 @@ const TeamPage = () => {
           {goalkeepers?.map((player) => (
             <tr key={player.id}>
               <td>
-                <Link to={`/player/${player.id}`}>{player.name}</Link>
+                <Link to={`/player/${player.id}`} state={{ teamId }}>{player.name}</Link>
               </td>
               <td>{player.age}</td>
               <td>{player.number}</td>
@@ -81,7 +91,7 @@ const TeamPage = () => {
           {outfieldPlayers?.map((player) => (
             <tr key={player.id}>
               <td>
-                <Link to={`/player/${player.id}`}>{player.name}</Link>
+                <Link to={`/player/${player.id}`} state={{ teamId }}>{player.name}</Link>
               </td>
               <td>{player.position}</td>
               <td>{player.age}</td>

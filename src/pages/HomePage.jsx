@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const leagues = [
-  { id: 39, name: 'English Premier League (ENG)' },
-  { id: 140, name: 'La Liga (ESP)' },
-  { id: 135, name: 'Serie A (ITA)' },
-  { id: 78, name: 'Bundesliga (GER)' },
-  { id: 71, name: 'Ligue 1 (FRA)' },
+  { id: 39, name: "English Premier League (ENG)" },
+  { id: 140, name: "La Liga (ESP)" },
+  { id: 135, name: "Serie A (ITA)" },
+  { id: 78, name: "Bundesliga (GER)" },
+  { id: 61, name: "Ligue 1 (FRA)" },
 ];
 
 const seasons = [2021, 2022, 2023];

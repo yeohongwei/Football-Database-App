@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getPlayerProfile } from "../api/footballApi";
 import { addFavouritePlayer } from "../api/airtableApi";
@@ -7,7 +7,10 @@ import { addFavouritePlayer } from "../api/airtableApi";
 const PlayerPage = () => {
   const { playerId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
+
+  const { leagueId, teamId } = location.state || {};
 
   const favouritePlayers = queryClient.getQueryData(["favouritePlayers"]);
   const favouritePlayer = favouritePlayers?.find(
@@ -40,7 +43,6 @@ const PlayerPage = () => {
   }
 
   const player = favouritePlayer || playerData?.response[0]?.player;
-  // const statistics = playerData?.response[0]?.statistics[0];
 
   const isFavourite = favouritePlayers?.some((p) => p.externalId === player.id);
 
@@ -58,16 +60,24 @@ const PlayerPage = () => {
       nationality: player.nationality,
       height: player.height,
       weight: player.weight,
-      number: statistics?.games.number,
-      position: statistics?.games.position,
+      number: player.number,
+      position: player.position,
       photo: player.photo,
     };
     mutation.mutate(playerDataToSave);
   };
 
+  const handleBack = () => {
+    if (teamId) {
+      navigate(`/team/${teamId}`);
+    } else {
+      navigate("/");
+    }
+  };
+
   return (
     <div>
-      <button onClick={() => navigate(-1)}>Back</button>
+      <button onClick={handleBack}>Back</button>
       {player && (
         <div>
           <h1>{player.name}</h1>
@@ -93,12 +103,10 @@ const PlayerPage = () => {
             <strong>Weight:</strong> {player.weight}
           </p>
           <p>
-            <strong>Position:</strong>{" "}
-            {player.position || statistics?.games.position}
+            <strong>Position:</strong> {player.position}
           </p>
           <p>
-            <strong>Jersey Number:</strong>{" "}
-            {player.number || statistics?.games.number}
+            <strong>Jersey Number:</strong> {player.number}
           </p>
           <button onClick={handleAddToFavourites} disabled={isFavourite}>
             {isFavourite ? "Added to Favourites" : "Add to Favourites"}
