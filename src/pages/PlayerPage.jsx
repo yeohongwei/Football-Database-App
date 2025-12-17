@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getPlayerProfile } from "../api/footballApi";
-import { addFavouritePlayer } from "../api/airtableApi";
+import { addFavouritePlayer, getFavouritePlayers } from "../api/airtableApi";
 
 const PlayerPage = () => {
   const { playerId } = useParams();
@@ -10,12 +10,18 @@ const PlayerPage = () => {
   const location = useLocation();
   const queryClient = useQueryClient();
 
-  const { leagueId, teamId } = location.state || {};
+  const { teamId } = location.state || {};
 
-  const favouritePlayers = queryClient.getQueryData(["favouritePlayers"]);
-  const favouritePlayer = favouritePlayers?.find(
-    (p) => p.externalId === parseInt(playerId)
-  );
+  const { data: favouritePlayers = [], isSuccess: isFavouriteSuccess } =
+    useQuery({
+      queryKey: ["favouritePlayers"],
+      queryFn: getFavouritePlayers,
+    });
+
+  const favouritePlayer = useMemo(() => {
+    if (!isFavouriteSuccess) return null;
+    return favouritePlayers.find((p) => p.externalId === parseInt(playerId));
+  }, [favouritePlayers, playerId]);
 
   const {
     data: playerData,
@@ -30,7 +36,7 @@ const PlayerPage = () => {
   const mutation = useMutation({
     mutationFn: addFavouritePlayer,
     onSuccess: () => {
-      queryClient.invalidateQueries("favouritePlayers");
+      queryClient.invalidateQueries(["favouritePlayers"]);
     },
   });
 
@@ -42,13 +48,28 @@ const PlayerPage = () => {
     return <div>Error fetching data</div>;
   }
 
-  const player = favouritePlayer || playerData?.response[0]?.player;
+  const player = useMemo(() => {
+    if (favouritePlayer) return favouritePlayer;
 
-  const isFavourite = favouritePlayers?.some((p) => p.externalId === player.id);
+    if (playerData) {
+      const p = playerData.response[0].player;
+      return {
+        ...p,
+        birthDate: p.birth.date,
+        birthPlace: p.birth.place,
+        birthCountry: p.birth.country,
+      };
+    }
+
+    return null;
+  }, [favouritePlayer, playerData]);
+
+  const isFavourite = favouritePlayers.some(
+    (p) => p.externalId === player.externalId
+  );
 
   const handleAddToFavourites = () => {
     const playerDataToSave = {
-      type: "player",
       externalId: player.id,
       name: player.name,
       firstname: player.firstname,
@@ -86,21 +107,20 @@ const PlayerPage = () => {
             <strong>Age:</strong> {player.age}
           </p>
           <p>
-            <strong>Birth Date:</strong> {player.birthDate || player.birth.date}
+            <strong>Birth Date:</strong> {player.birthDate}
           </p>
           <p>
-            <strong>Birth Place:</strong>{" "}
-            {player.birthPlace || player.birth.place},{" "}
-            {player.birthCountry || player.birth.country}
+            <strong>Birth Place:</strong>
+            {player.birthPlace}, {player.birthCountry}
           </p>
           <p>
             <strong>Nationality:</strong> {player.nationality}
           </p>
           <p>
-            <strong>Height:</strong> {player.height}
+            <strong>Height:</strong> {player.height} cm
           </p>
           <p>
-            <strong>Weight:</strong> {player.weight}
+            <strong>Weight:</strong> {player.weight} kg
           </p>
           <p>
             <strong>Position:</strong> {player.position}

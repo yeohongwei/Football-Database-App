@@ -1,8 +1,8 @@
-import React from 'react';
-import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getTeamSquad } from '../api/footballApi';
-import PlayerCard from '../components/PlayerCard';
+import React, { useMemo } from "react";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { getTeamSquad } from "../api/footballApi";
+import PlayerCard from "../components/PlayerCard";
 
 const TeamPage = () => {
   const { teamId } = useParams();
@@ -10,8 +10,8 @@ const TeamPage = () => {
   const location = useLocation();
   const { leagueId, season } = location.state || {};
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ['teamSquad', teamId],
+  const { data, isLoading, isError, isSuccess } = useQuery({
+    queryKey: ["teamSquad", teamId],
     queryFn: () => getTeamSquad(teamId),
   });
 
@@ -19,9 +19,25 @@ const TeamPage = () => {
     if (leagueId && season) {
       navigate(`/league/${leagueId}/${season}`);
     } else {
-      navigate('/');
+      navigate("/");
     }
   };
+
+  const { team, players, goalkeepers, outfieldPlayers } = useMemo(() => {
+    if (!isSuccess) {
+      return { team: null, players: [], goalkeepers: [], outfieldPlayers: [] };
+    }
+    const team = data.response[0].team;
+    const players = data.response[0].players || [];
+    const goalkeepers = players.filter((p) => p.position === "Goalkeeper");
+    const outfieldPlayers = players
+      .filter((p) => p.position !== "Goalkeeper")
+      .sort((a, b) => {
+        const positions = ["Defender", "Midfielder", "Attacker"];
+        return positions.indexOf(a.position) - positions.indexOf(b.position);
+      });
+    return { team, players, goalkeepers, outfieldPlayers };
+  }, [data]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -30,16 +46,6 @@ const TeamPage = () => {
   if (isError) {
     return <div>Error fetching data</div>;
   }
-
-  const team = data?.response[0]?.team;
-  const players = data?.response[0]?.players;
-
-  const goalkeepers = players?.filter((p) => p.position === 'Goalkeeper');
-  const outfieldPlayers = players?.filter((p) => p.position !== 'Goalkeeper')
-    .sort((a, b) => {
-        const positions = ['Defender', 'Midfielder', 'Attacker'];
-        return positions.indexOf(a.position) - positions.indexOf(b.position);
-    });
 
   return (
     <div>
@@ -62,7 +68,7 @@ const TeamPage = () => {
           </tr>
         </thead>
         <tbody>
-          {goalkeepers?.map((player) => (
+          {goalkeepers.map((player) => (
             <PlayerCard key={player.id} player={player} teamId={teamId} />
           ))}
         </tbody>
@@ -80,7 +86,7 @@ const TeamPage = () => {
           </tr>
         </thead>
         <tbody>
-          {outfieldPlayers?.map((player) => (
+          {outfieldPlayers.map((player) => (
             <PlayerCard key={player.id} player={player} teamId={teamId} />
           ))}
         </tbody>
