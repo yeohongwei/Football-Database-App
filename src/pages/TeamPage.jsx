@@ -1,27 +1,16 @@
 import React, { useMemo } from "react";
-import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
+import { useParams, Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getTeamSquad } from "../api/footballApi";
 import PlayerCard from "../components/PlayerCard";
 
 const TeamPage = () => {
   const { teamId } = useParams();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { leagueId, season } = location.state || {};
 
   const { data, isLoading, isError, isSuccess } = useQuery({
     queryKey: ["teamSquad", teamId],
     queryFn: () => getTeamSquad(teamId),
   });
-
-  const handleBack = () => {
-    if (leagueId && season) {
-      navigate(`/league/${leagueId}/${season}`);
-    } else {
-      navigate("/");
-    }
-  };
 
   const { team, players, goalkeepers, outfieldPlayers } = useMemo(() => {
     if (!isSuccess) {
@@ -49,7 +38,7 @@ const TeamPage = () => {
 
   return (
     <div>
-      <button onClick={handleBack}>Back</button>
+      <Link to="/home">Back to Home</Link>
       {team && (
         <div>
           <h1>{team.name}</h1>

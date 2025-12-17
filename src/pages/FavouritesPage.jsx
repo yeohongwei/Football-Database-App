@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { removeFavouritePlayer, getFavouritePlayers } from "../api/airtableApi";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
+import RemovePlayerModal from "../components/RemovePlayerModal";
 
 const FavouritesPage = () => {
   const queryClient = useQueryClient();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [playerToRemove, setPlayerToRemove] = useState(null);
+
   const {
     data: favouritePlayers,
     isLoading,
@@ -21,8 +25,21 @@ const FavouritesPage = () => {
     },
   });
 
-  const handleRemove = (recordId) => {
-    mutation.mutate(recordId);
+  const openRemoveModal = (player) => {
+    setPlayerToRemove(player);
+    setIsModalOpen(true);
+  };
+
+  const closeRemoveModal = () => {
+    setPlayerToRemove(null);
+    setIsModalOpen(false);
+  };
+
+  const confirmRemove = () => {
+    if (playerToRemove) {
+      mutation.mutate(playerToRemove.id);
+    }
+    closeRemoveModal();
   };
 
   if (isLoading) {
@@ -35,6 +52,7 @@ const FavouritesPage = () => {
 
   return (
     <div>
+      <Link to="/home">Back to Home</Link>
       <h1>Favourite Players</h1>
       {favouritePlayers && favouritePlayers.length > 0 ? (
         <table>
@@ -55,7 +73,7 @@ const FavouritesPage = () => {
                   <img src={player.photo} alt={player.name} width="50" />
                 </td>
                 <td>
-                  <button onClick={() => handleRemove(player.id)}>
+                  <button onClick={() => openRemoveModal(player)}>
                     Remove from Favourites
                   </button>
                 </td>
@@ -66,6 +84,12 @@ const FavouritesPage = () => {
       ) : (
         <p>No favourite players yet.</p>
       )}
+      <RemovePlayerModal
+        isOpen={isModalOpen}
+        onClose={closeRemoveModal}
+        onConfirm={confirmRemove}
+        playerName={playerToRemove?.name}
+      />
     </div>
   );
 };

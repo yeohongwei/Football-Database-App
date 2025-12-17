@@ -1,22 +1,63 @@
-import React from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getStandings, getTopScorers } from '../api/footballApi';
-import TeamStatistics from '../components/TeamStatistics';
+import React from "react";
+import { useParams, Link } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getStandings, getTopScorers } from "../api/footballApi";
+import TeamStatistics from "../components/TeamStatistics";
 
 const LeaguePage = () => {
   const { leagueId, season } = useParams();
 
-  const { data: standingsData, isLoading: isLoadingStandings, isError: isErrorStandings } = useQuery({
-    queryKey: ['standings', leagueId, season],
+  // ─────────────────────────────────────
+  // Standings Query (fully normalized)
+  // ─────────────────────────────────────
+  const {
+    data: leagueData,
+    isLoading: isLoadingStandings,
+    isError: isErrorStandings,
+  } = useQuery({
+    queryKey: ["standings", leagueId, season],
     queryFn: () => getStandings(leagueId, season),
+    select: (data) => {
+      const league = data.response[0].league;
+      const standings = league.standings[0];
+
+      // Group descriptions by rank
+      const descriptionGroups = standings.reduce((groups, team) => {
+        if (team.description) {
+          if (!groups[team.description]) {
+            groups[team.description] = [];
+          }
+          groups[team.description].push(team.rank);
+        }
+        return groups;
+      }, {});
+
+      return {
+        id: league.id,
+        name: league.name,
+        logo: league.logo,
+        standings,
+        descriptionGroups,
+      };
+    },
   });
 
-  const { data: topScorersData, isLoading: isLoadingTopScorers, isError: isErrorTopScorers } = useQuery({
-    queryKey: ['topScorers', leagueId, season],
+  // ─────────────────────────────────────
+  // Top Scorers Query (normalized + sliced)
+  // ─────────────────────────────────────
+  const {
+    data: topScorers = [],
+    isLoading: isLoadingTopScorers,
+    isError: isErrorTopScorers,
+  } = useQuery({
+    queryKey: ["topScorers", leagueId, season],
     queryFn: () => getTopScorers(leagueId, season),
+    select: (data) => data.response.slice(0, 5),
   });
 
+  // ─────────────────────────────────────
+  // Loading / Error
+  // ─────────────────────────────────────
   if (isLoadingStandings || isLoadingTopScorers) {
     return <div>Loading...</div>;
   }
@@ -25,18 +66,21 @@ const LeaguePage = () => {
     return <div>Error fetching data</div>;
   }
 
-  const league = standingsData?.response[0]?.league;
-  const standings = league?.standings[0];
+  const { name, logo, standings, descriptionGroups } = leagueData;
 
+  // ─────────────────────────────────────
+  // Render
+  // ─────────────────────────────────────
   return (
     <div>
       <Link to="/home">Back to Home</Link>
-      {league && (
-        <div>
-          <h1>{league.name} - {season}</h1>
-          <img src={league.logo} alt={league.name} />
-        </div>
-      )}
+
+      <div>
+        <h1>
+          {name} - {season}
+        </h1>
+        <img src={logo} alt={name} />
+      </div>
 
       <h2>Standings</h2>
       <table>
@@ -55,20 +99,32 @@ const LeaguePage = () => {
           </tr>
         </thead>
         <tbody>
-          {standings?.map((team) => (
-            <TeamStatistics key={team.team.id} team={team} leagueId={leagueId} season={season} />
+          {standings.map((team) => (
+            <TeamStatistics
+              key={team.team.id}
+              team={team}
+              leagueId={leagueId}
+              season={season}
+            />
           ))}
         </tbody>
       </table>
-        {standingsData?.response[0]?.league?.standings[0][0]?.description}
+
+      <div>
+        {Object.entries(descriptionGroups).map(([description, ranks]) => (
+          <p key={description}>
+            Position {ranks.join(", ")}: {description}
+          </p>
+        ))}
+      </div>
 
       <h2>Top Scorers</h2>
       <ul>
-        {topScorersData?.response.slice(0, 5).map((scorer) => (
+        {topScorers.map((scorer) => (
           <li key={scorer.player.id}>
-            <Link to={`/player/${scorer.player.id}`}>
-              {scorer.player.name}
-            </Link> ({scorer.statistics[0].goals.total} goals) - {scorer.statistics[0].team.name}
+            <Link to={`/player/${scorer.player.id}`}>{scorer.player.name}</Link>{" "}
+            ({scorer.statistics[0].goals.total} goals) –{" "}
+            {scorer.statistics[0].team.name}
           </li>
         ))}
       </ul>

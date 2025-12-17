@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const leagues = [
   { id: 39, name: "English Premier League (ENG)" },
@@ -9,7 +9,7 @@ const leagues = [
   { id: 61, name: "Ligue 1 (FRA)" },
 ];
 
-const seasons = [2021, 2022, 2023];
+const seasons = [2023, 2022, 2021];
 
 const HomePage = () => {
   const [selectedLeague, setSelectedLeague] = useState(leagues[0].id);
