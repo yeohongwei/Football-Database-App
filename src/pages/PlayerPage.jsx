@@ -83,40 +83,30 @@ const PlayerPage = () => {
   /* ---------------- UI ---------------- */
 
   return (
-    <div>
-      <Link to="/home">Back to Home</Link>
-
-      <h1>{player.name}</h1>
-      <img src={player.photo} alt={player.name} width="150" />
-
-      <p>
-        <strong>Age:</strong> {player.age}
-      </p>
-      <p>
-        <strong>Birth Date:</strong> {player.birthDate}
-      </p>
-      <p>
-        <strong>Birth Place:</strong> {player.birthPlace}, {player.birthCountry}
-      </p>
-      <p>
-        <strong>Nationality:</strong> {player.nationality}
-      </p>
-      <p>
-        <strong>Height:</strong> {player.height} cm
-      </p>
-      <p>
-        <strong>Weight:</strong> {player.weight} kg
-      </p>
-      <p>
-        <strong>Position:</strong> {player.position}
-      </p>
-      <p>
-        <strong>Jersey Number:</strong> {player.number}
-      </p>
-
-      <button onClick={handleAddToFavourites} disabled={isFavourite}>
-        {isFavourite ? "Added to Favourites" : "Add to Favourites"}
-      </button>
+    <div className="bg-gray-900 text-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto">
+      <div className="flex flex-col md:flex-row items-center md:items-start">
+        <img src={player.photo} alt={player.name} className="w-48 h-48 rounded-full object-cover border-4 border-gray-700 mb-6 md:mb-0 md:mr-8" />
+        <div className="text-center md:text-left">
+          <h1 className="text-4xl font-bold mb-2">{player.name}</h1>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4 text-lg">
+            <p><strong>Age:</strong> {player.age}</p>
+            <p><strong>Position:</strong> {player.position}</p>
+            <p><strong>Jersey Number:</strong> {player.number || 'N/A'}</p>
+            <p><strong>Nationality:</strong> {player.nationality}</p>
+            <p><strong>Height:</strong> {player.height}</p>
+            <p><strong>Weight:</strong> {player.weight}</p>
+            <p className="col-span-2"><strong>Birth Date:</strong> {player.birthDate}</p>
+            <p className="col-span-2"><strong>Birth Place:</strong> {player.birthPlace}, {player.birthCountry}</p>
+          </div>
+          <button 
+            onClick={handleAddToFavourites} 
+            disabled={isFavourite}
+            className="mt-6 w-full md:w-auto bg-green-600 hover:bg-green-700 disabled:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg transition duration-300"
+          >
+            {isFavourite ? "Added to Favourites" : "Add to Favourites"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

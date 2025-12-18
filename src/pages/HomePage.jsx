@@ -21,37 +21,46 @@ const HomePage = () => {
   };
 
   return (
-    <div>
-      <h1>Football Database</h1>
-      <div>
-        <label htmlFor="league-select">Choose a league:</label>
-        <select
-          id="league-select"
-          value={selectedLeague}
-          onChange={(e) => setSelectedLeague(e.target.value)}
-        >
-          {leagues.map((league) => (
-            <option key={league.id} value={league.id}>
-              {league.name}
-            </option>
-          ))}
-        </select>
+    <div className="bg-gray-900 text-white p-8 rounded-lg shadow-lg max-w-md mx-auto">
+      <h1 className="text-4xl font-bold text-center mb-6">Football Database</h1>
+      <div className="space-y-4">
+        <div>
+          <label htmlFor="league-select" className="block text-sm font-medium text-gray-400 mb-1">Choose a league:</label>
+          <select
+            id="league-select"
+            value={selectedLeague}
+            onChange={(e) => setSelectedLeague(e.target.value)}
+            className="w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {leagues.map((league) => (
+              <option key={league.id} value={league.id} className="bg-gray-800 text-white">
+                {league.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label htmlFor="season-select" className="block text-sm font-medium text-gray-400 mb-1">Choose a season:</label>
+          <select
+            id="season-select"
+            value={selectedSeason}
+            onChange={(e) => setSelectedSeason(e.target.value)}
+            className="w-full bg-gray-800 border border-gray-700 rounded-md p-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {seasons.map((season) => (
+              <option key={season} value={season} className="bg-gray-800 text-white">
+                {season}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
-      <div>
-        <label htmlFor="season-select">Choose a season:</label>
-        <select
-          id="season-select"
-          value={selectedSeason}
-          onChange={(e) => setSelectedSeason(e.target.value)}
-        >
-          {seasons.map((season) => (
-            <option key={season} value={season}>
-              {season}
-            </option>
-          ))}
-        </select>
-      </div>
-      <button onClick={handleSubmit}>View Standings</button>
+      <button 
+        onClick={handleSubmit} 
+        className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md transition duration-300"
+      >
+        View Standings
+      </button>
     </div>
   );
 };

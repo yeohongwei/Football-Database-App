@@ -51,30 +51,29 @@ const FavouritesPage = () => {
   }
 
   return (
-    <div>
-      <Link to="/home">Back to Home</Link>
-      <h1>Favourite Players</h1>
+    <div className="bg-gray-900 text-white p-4">
+      <h1 className="text-3xl font-bold mb-4">Favourite Players</h1>
       {favouritePlayers && favouritePlayers.length > 0 ? (
-        <table>
+        <table className="min-w-full bg-gray-800 rounded-lg">
           <thead>
-            <tr>
-              <th>Name</th>
-              <th>Photo</th>
-              <th>Action</th>
+            <tr className="border-b border-gray-700">
+              <th className="text-left p-4">Name</th>
+              <th className="text-left p-4">Photo</th>
+              <th className="text-left p-4">Action</th>
             </tr>
           </thead>
           <tbody>
             {favouritePlayers.map((player) => (
-              <tr key={player.id}>
-                <td>
-                  <Link to={`/player/${player.externalId}`}>{player.name}</Link>
+              <tr key={player.id} className="hover:bg-gray-700">
+                <td className="p-4">
+                  <Link to={`/player/${player.externalId}`} className="text-blue-400 hover:underline">{player.name}</Link>
                 </td>
-                <td>
-                  <img src={player.photo} alt={player.name} width="50" />
+                <td className="p-4">
+                  <img src={player.photo} alt={player.name} className="w-12 h-12 rounded-full object-cover" />
                 </td>
-                <td>
-                  <button onClick={() => openRemoveModal(player)}>
-                    Remove from Favourites
+                <td className="p-4">
+                  <button onClick={() => openRemoveModal(player)} className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    Remove
                   </button>
                 </td>
               </tr>
@@ -82,7 +81,7 @@ const FavouritesPage = () => {
           </tbody>
         </table>
       ) : (
-        <p>No favourite players yet.</p>
+        <p className="text-center text-gray-400">No favourite players yet.</p>
       )}
       <RemovePlayerModal
         isOpen={isModalOpen}

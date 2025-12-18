@@ -72,62 +72,78 @@ const LeaguePage = () => {
   // Render
   // ─────────────────────────────────────
   return (
-    <div>
-      <Link to="/home">Back to Home</Link>
-
-      <div>
-        <h1>
+    <div className="bg-gray-900 text-white p-4">
+      <div className="flex items-center mb-6">
+        <img src={logo} alt={name} className="w-12 h-12 mr-4" />
+        <h1 className="text-3xl font-bold">
           {name} - {season}
         </h1>
-        <img src={logo} alt={name} />
       </div>
 
-      <h2>Standings</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Team</th>
-            <th>Played</th>
-            <th>Won</th>
-            <th>Drawn</th>
-            <th>Lost</th>
-            <th>GF</th>
-            <th>GA</th>
-            <th>GD</th>
-            <th>Points</th>
-          </tr>
-        </thead>
-        <tbody>
-          {standings.map((team) => (
-            <TeamStatistics
-              key={team.team.id}
-              team={team}
-              leagueId={leagueId}
-              season={season}
-            />
-          ))}
-        </tbody>
-      </table>
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Standings</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-gray-800 rounded-lg">
+            <thead>
+              <tr className="border-b border-gray-700">
+                <th className="text-left p-4">Position</th>
+                <th className="text-left p-4">Team</th>
+                <th className="text-left p-4">Played</th>
+                <th className="text-left p-4">Wins</th>
+                <th className="text-left p-4">Draws</th>
+                <th className="text-left p-4">Losses</th>
+                <th className="text-left p-4">GF</th>
+                <th className="text-left p-4">GA</th>
+                <th className="text-left p-4">GD</th>
+                <th className="text-left p-4">Points</th>
+              </tr>
+            </thead>
+            <tbody>
+              {standings.map((team) => (
+                <TeamStatistics
+                  key={team.team.id}
+                  team={team}
+                  leagueId={leagueId}
+                  season={season}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-      <div>
+      <div className="bg-gray-800 p-4 rounded-lg mb-8">
         {Object.entries(descriptionGroups).map(([description, ranks]) => (
-          <p key={description}>
+          <p key={description} className="text-sm text-gray-400">
             Position {ranks.join(", ")}: {description}
           </p>
         ))}
       </div>
 
-      <h2>Top Scorers</h2>
-      <ul>
-        {topScorers.map((scorer) => (
-          <li key={scorer.player.id}>
-            <Link to={`/player/${scorer.player.id}`}>{scorer.player.name}</Link>{" "}
-            ({scorer.statistics[0].goals.total} goals) –{" "}
-            {scorer.statistics[0].team.name}
-          </li>
-        ))}
-      </ul>
+      <div>
+        <h2 className="text-2xl font-semibold mb-4">Top Scorers</h2>
+        <ul className="space-y-2">
+          {topScorers.map((scorer) => (
+            <li
+              key={scorer.player.id}
+              className="bg-gray-800 p-3 rounded-lg grid grid-cols-3 items-center"
+            >
+              <Link
+                to={`/player/${scorer.player.id}`}
+                className="text-blue-400 hover:underline text-left"
+              >
+                {scorer.player.name}
+              </Link>
+              <span className="font-semibold text-center">
+                {scorer.statistics[0].goals.total} goals
+              </span>
+              <span className="text-gray-400 text-right">
+                {scorer.statistics[0].team.name}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

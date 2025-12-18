@@ -20,27 +20,33 @@ function App() {
   });
 
   if (isLoading) {
-    return <div>Loading initial data...</div>;
+    return <div className="text-center p-4">Loading initial data...</div>;
   }
 
   if (isError) {
-    return <div>Error loading initial data...</div>;
+    return <div className="text-center p-4 text-red-500">Error loading initial data...</div>;
   }
 
   return (
-    <div>
-      <nav>
-        <Link to="/favourites">Favourites</Link>
-      </nav>
-      <Routes>
-        <Route path="/" element={<Navigate to="/home" />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/league/:leagueId/:season" element={<LeaguePage />} />
-        <Route path="/team/:teamId" element={<TeamPage />} />
-        <Route path="/player/:playerId" element={<PlayerPage />} />
-        <Route path="/favourites" element={<FavouritesPage />} />
-        <Route path="*" element={<NotFoundPage />} /> {/* Catch-all route */}
-      </Routes>
+    <div className="bg-gray-900 min-h-screen text-white p-4">
+      <div className="max-w-7xl mx-auto">
+        <nav className="flex justify-end items-center p-4 bg-gray-800 rounded-t-lg">
+          <Link to="/home" className="text-lg font-semibold hover:text-blue-400 transition-colors">Home</Link>
+          <span className="mx-4 text-gray-500">|</span>
+          <Link to="/favourites" className="text-lg font-semibold hover:text-blue-400 transition-colors">Favourites</Link>
+        </nav>
+        <main className="p-4 bg-gray-800 rounded-b-lg">
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/league/:leagueId/:season" element={<LeaguePage />} />
+            <Route path="/team/:teamId" element={<TeamPage />} />
+            <Route path="/player/:playerId" element={<PlayerPage />} />
+            <Route path="/favourites" element={<FavouritesPage />} />
+            <Route path="*" element={<NotFoundPage />} /> {/* Catch-all route */}
+          </Routes>
+        </main>
+      </div>
     </div>
   );
 }

@@ -37,49 +37,56 @@ const TeamPage = () => {
   }
 
   return (
-    <div>
-      <Link to="/home">Back to Home</Link>
+    <div className="bg-gray-900 text-white p-4">
       {team && (
-        <div>
-          <h1>{team.name}</h1>
-          <img src={team.logo} alt={team.name} />
+        <div className="flex items-center mb-6">
+          <img src={team.logo} alt={team.name} className="w-16 h-16 mr-4" />
+          <h1 className="text-3xl font-bold">{team.name}</h1>
         </div>
       )}
 
-      <h2>Goalkeepers</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Number</th>
-            <th>Photo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {goalkeepers.map((player) => (
-            <PlayerCard key={player.id} player={player} teamId={teamId} />
-          ))}
-        </tbody>
-      </table>
+      <div className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Goalkeepers</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-gray-800 rounded-lg">
+            <thead>
+              <tr className="border-b border-gray-700">
+                <th className="text-left p-4">Name</th>
+                <th className="text-left p-4">Age</th>
+                <th className="text-left p-4">Number</th>
+                <th className="text-left p-4">Photo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {goalkeepers.map((player) => (
+                <PlayerCard key={player.id} player={player} teamId={teamId} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-      <h2>Outfield Players</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Age</th>
-            <th>Number</th>
-            <th>Photo</th>
-          </tr>
-        </thead>
-        <tbody>
-          {outfieldPlayers.map((player) => (
-            <PlayerCard key={player.id} player={player} teamId={teamId} />
-          ))}
-        </tbody>
-      </table>
+      <div>
+        <h2 className="text-2xl font-semibold mb-4">Outfield Players</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-gray-800 rounded-lg">
+            <thead>
+              <tr className="border-b border-gray-700">
+                <th className="text-left p-4">Name</th>
+                <th className="text-left p-4">Position</th>
+                <th className="text-left p-4">Age</th>
+                <th className="text-left p-4">Number</th>
+                <th className="text-left p-4">Photo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {outfieldPlayers.map((player) => (
+                <PlayerCard key={player.id} player={player} teamId={teamId} />
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };
